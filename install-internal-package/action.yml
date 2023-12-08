@@ -11,7 +11,7 @@ runs:
   using: composite
   steps:
     - name: Authenticate to GitHub Packages
-      run: echo "//npm.pkg.github.com/:_authToken=${{ github.token }}" >> .npmrc
+      run: npm set //npm.pkg.github.com/:_authToken="${{ github.token }}"
 
     - name: Determine DevExtreme Version
       id: devextreme_version
