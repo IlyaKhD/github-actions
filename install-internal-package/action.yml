@@ -1,0 +1,29 @@
+name: install-internal-package
+description: Installs internal devextreme and devextreme-dist packages
+
+inputs:
+  install-dist:
+    description: true to install the internal devextreme and devextreme-dist packages; false to install the internal devextreme package only
+    required: false
+    default: false
+
+runs:
+  using: composite
+  steps:
+    - name: Authenticate to GitHub Packages
+      run: npm set //npm.pkg.github.com/:_authToken="${{ github.token }}"
+
+    - name: Determine DevExtreme Version
+      id: devextreme_version
+      run: echo "version=$(npm pkg get dependencies.devextreme --workspaces=false | tr -d '"')" >> $GITHUB_OUTPUT
+
+    - name: Install Internal devextreme Package
+      run: |
+        npm pack @devexpress/devextreme-internal@${{ steps.devextreme_version.outputs.version }} --registry https://npm.pkg.github.com
+        npm i devextreme@$(find . -name DevExpress-devextreme-internal-*.tgz)
+
+    - name: Install Internal devextreme-dist Package
+      if: inputs.install-dist
+      run: |
+        npm pack @devexpress/devextreme-dist-internal@${{ steps.devextreme_version.outputs.version }} --registry https://npm.pkg.github.com
+        npm i devextreme-dist@$(find . -name DevExpress-devextreme-dist-internal-*.tgz)
