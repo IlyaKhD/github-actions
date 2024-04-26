@@ -6,6 +6,10 @@ inputs:
     description: true to install the internal devextreme and devextreme-dist packages; false to install the internal devextreme package only
     required: false
     default: false
+  working-directory:
+    description: path to the directory where the target package.json is located
+    required: false
+    default: './'
 
 runs:
   using: composite
@@ -13,17 +17,20 @@ runs:
     - name: Authenticate to GitHub Packages
       shell: bash
       run: npm set //npm.pkg.github.com/:_authToken="${{ github.token }}"
+      working-directory: ${{ inputs.working-directory }}
 
     - name: Determine DevExtreme Version
       id: devextreme_version
       shell: bash
       run: echo "version=$(npm pkg get dependencies.devextreme --workspaces=false | tr -d '"')" >> $GITHUB_OUTPUT
+      working-directory: ${{ inputs.working-directory }}
 
     - name: Install Internal devextreme Package
       shell: bash
       run: |
         npm pack @devexpress/devextreme-internal@${{ steps.devextreme_version.outputs.version }} --registry https://npm.pkg.github.com
         npm i devextreme@$(find . -name DevExpress-devextreme-internal-*.tgz)
+      working-directory: ${{ inputs.working-directory }}
 
     - name: Install Internal devextreme-dist Package
       if: inputs.install-dist
@@ -31,3 +38,4 @@ runs:
       run: |
         npm pack @devexpress/devextreme-dist-internal@${{ steps.devextreme_version.outputs.version }} --registry https://npm.pkg.github.com
         npm i devextreme-dist@$(find . -name DevExpress-devextreme-dist-internal-*.tgz)
+      working-directory: ${{ inputs.working-directory }}
