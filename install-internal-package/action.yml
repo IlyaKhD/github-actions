@@ -26,29 +26,33 @@ runs:
       run: echo "version=$(npm pkg get dependencies.devextreme --workspaces=false | tr -d '"')" >> $GITHUB_OUTPUT
 
     - name: Download Internal devextreme Package
-      id: download_devextreme_package
+      id: download_devextreme
       run: |
         npm pack @devexpress/devextreme-internal@${{ steps.devextreme_version.outputs.version }} --registry https://npm.pkg.github.com
-        echo "dxtfilename=$(find . -name devexpress-devextreme-internal-*.tgz)" >> $GITHUB_OUTPUT
+        echo "packageFile=$(find . -name devexpress-devextreme-internal-*.tgz)" >> $GITHUB_OUTPUT
 
     - name: Check if DevExtreme File is Downloaded
-      if: steps.download_devextreme_package.outputs.dxtfilename == ''
+      if: steps.download_devextreme.outputs.packageFile == ''
       run: exit 1
 
     - name: Install Internal devextreme Package
-      run: npm i devextreme@${{ steps.download_devextreme_package.outputs.dxtfilename }}
+      env:
+        PACKAGE_FILE: ${{ steps.download_devextreme.outputs.packageFile }}
+      run: npm i devextreme@$PACKAGE_FILE
 
     - name: Download Internal devextreme-dist Package
       if: inputs.install-dist
-      id: download_devextreme_dist_package
+      id: download_devextreme_dist
       run: |
         npm pack @devexpress/devextreme-dist-internal@${{ steps.devextreme_version.outputs.version }} --registry https://npm.pkg.github.com
-        echo "dxtdistfilename=$(find . -name devexpress-devextreme-dist-internal-*.tgz)" >> $GITHUB_OUTPUT
+        echo "packageFile=$(find . -name devexpress-devextreme-dist-internal-*.tgz)" >> $GITHUB_OUTPUT
 
     - name: Check if DevExtreme-Dist File is Downloaded
-      if: inputs.install-dist && steps.download_devextreme_dist_package.outputs.dxtdistfilename == ''
+      if: inputs.install-dist && steps.download_devextreme_dist.outputs.packageFile == ''
       run: exit 1
 
     - name: Install Internal devextreme-dist Package
       if: inputs.install-dist
-      run: npm i devextreme-dist@${{ steps.download_devextreme_dist_package.outputs.dxtdistfilename }}
+      env:
+        PACKAGE_FILE: ${{ steps.download_devextreme_dist.outputs.packageFile }}
+      run: npm i devextreme-dist@$PACKAGE_FILE
