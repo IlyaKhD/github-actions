@@ -13,46 +13,58 @@ inputs:
 
 runs:
   using: composite
-  defaults:
-    run:
-      shell: bash
-      working-directory: ${{ inputs.working-directory }}
   steps:
     - name: Authenticate to GitHub Packages
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: npm set //npm.pkg.github.com/:_authToken="${{ github.token }}"
 
     - name: Determine DevExtreme Version
       id: devextreme_version
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: echo "version=$(npm pkg get dependencies.devextreme --workspaces=false | tr -d '"')" >> $GITHUB_OUTPUT
 
     - name: Download Internal devextreme Package
       id: download_devextreme
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: |
         npm pack @devexpress/devextreme-internal@${{ steps.devextreme_version.outputs.version }} --registry https://npm.pkg.github.com
         echo "packageFile=$(find . -name devexpress-devextreme-internal-*.tgz)" >> $GITHUB_OUTPUT
 
     - name: Check if DevExtreme File is Downloaded
       if: steps.download_devextreme.outputs.packageFile == ''
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: exit 1
 
     - name: Install Internal devextreme Package
       env:
         PACKAGE_FILE: ${{ steps.download_devextreme.outputs.packageFile }}
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: npm i devextreme@$PACKAGE_FILE
 
     - name: Download Internal devextreme-dist Package
       if: inputs.install-dist
       id: download_devextreme_dist
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: |
         npm pack @devexpress/devextreme-dist-internal@${{ steps.devextreme_version.outputs.version }} --registry https://npm.pkg.github.com
         echo "packageFile=$(find . -name devexpress-devextreme-dist-internal-*.tgz)" >> $GITHUB_OUTPUT
 
     - name: Check if DevExtreme-Dist File is Downloaded
       if: inputs.install-dist && steps.download_devextreme_dist.outputs.packageFile == ''
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: exit 1
 
     - name: Install Internal devextreme-dist Package
       if: inputs.install-dist
       env:
         PACKAGE_FILE: ${{ steps.download_devextreme_dist.outputs.packageFile }}
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: npm i devextreme-dist@$PACKAGE_FILE
