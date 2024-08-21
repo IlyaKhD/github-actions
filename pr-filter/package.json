@@ -1,0 +1,17 @@
+{
+  "name": "pr-filter",
+  "description": "GitHub action that checks if PR meets certain criteria",
+  "version": "0.1.0",
+  "author": "Developer Express Inc.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "main": "lib/main.js",
+  "scripts": {
+    "clean": "rimraf dist lib",
+    "build": "tsc",
+    "package": "ncc build",
+    "test": "jest"
+  }
+}
