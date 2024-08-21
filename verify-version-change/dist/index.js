@@ -1,6 +1,144 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 3120:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.execCommand = void 0;
+const exec_1 = __nccwpck_require__(110);
+function execCommand(command) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { stdout, stderr, exitCode } = yield (0, exec_1.getExecOutput)(command);
+        if (exitCode !== 0) {
+            throw new Error(`Command "${command}" has been failed with error: ${stderr}`);
+        }
+        return stdout.trim();
+    });
+}
+exports.execCommand = execCommand;
+
+
+/***/ }),
+
+/***/ 9145:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__nccwpck_require__(3120), exports);
+__exportStar(__nccwpck_require__(3400), exports);
+
+
+/***/ }),
+
+/***/ 3400:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getRange = exports.getPrRevisionRange = void 0;
+const core = __importStar(__nccwpck_require__(5316));
+const github_1 = __nccwpck_require__(2189);
+const common_utils_1 = __nccwpck_require__(3120);
+function getPrRevisionRange() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return getRange().then((r) => {
+            core.info(`Base commit: ${r.base}`);
+            core.info(`Head commit: ${r.head}`);
+            return r;
+        });
+    });
+}
+exports.getPrRevisionRange = getPrRevisionRange;
+function normalizeCommit(commit) {
+    return commit === '0000000000000000000000000000000000000000' ? 'HEAD^' : commit;
+}
+function getRange() {
+    var _a, _b, _c, _d;
+    return __awaiter(this, void 0, void 0, function* () {
+        switch (github_1.context.eventName) {
+            case 'pull_request':
+                const baseBranch = (_b = (_a = github_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.base) === null || _b === void 0 ? void 0 : _b.ref;
+                yield (0, common_utils_1.execCommand)(`git fetch origin`);
+                return {
+                    base: yield (0, common_utils_1.execCommand)(`git rev-parse origin/${baseBranch}`),
+                    head: (_d = (_c = github_1.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.head) === null || _d === void 0 ? void 0 : _d.sha,
+                };
+            case 'push':
+                return {
+                    base: normalizeCommit(github_1.context.payload.before),
+                    head: github_1.context.payload.after,
+                };
+            default:
+                throw new Error(`This action only supports pull requests and pushes, ${github_1.context.eventName} events are not supported.`);
+        }
+    });
+}
+exports.getRange = getRange;
+
+
+/***/ }),
+
 /***/ 9190:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -35660,46 +35798,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(5316));
-const github_1 = __nccwpck_require__(2189);
-const exec_1 = __nccwpck_require__(110);
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const semver_1 = __importDefault(__nccwpck_require__(931));
-const execCommand = (command) => __awaiter(void 0, void 0, void 0, function* () {
-    const { stdout, stderr, exitCode } = yield (0, exec_1.getExecOutput)(command);
-    if (exitCode !== 0) {
-        throw new Error(`Command "${command}" has been failed with error: ${stderr}`);
-    }
-    return stdout.trim();
-});
+const common_1 = __nccwpck_require__(9145);
 function run() {
-    var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const packageJsonPath = path_1.default.join(core.getInput('path'), 'package.json');
-            const eventName = github_1.context.eventName;
-            let base;
-            let head;
-            switch (eventName) {
-                case 'pull_request':
-                    const baseBranch = (_b = (_a = github_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.base) === null || _b === void 0 ? void 0 : _b.ref;
-                    yield execCommand(`git fetch origin`);
-                    base = yield execCommand(`git rev-parse origin/${baseBranch}`);
-                    head = (_d = (_c = github_1.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.head) === null || _d === void 0 ? void 0 : _d.sha;
-                    break;
-                case 'push':
-                    base = github_1.context.payload.before;
-                    head = github_1.context.payload.after;
-                    if (base === '0000000000000000000000000000000000000000') {
-                        base = 'HEAD^';
-                    }
-                    break;
-                default:
-                    throw new Error(`This action only supports pull requests and pushes, ${github_1.context.eventName} events are not supported.`);
-            }
-            core.info(`Base commit: ${base}`);
-            core.info(`Head commit: ${head}`);
+            const { head, base } = yield (0, common_1.getPrRevisionRange)();
             // https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---word-diffltmodegt
-            const diff = yield execCommand(`git diff --word-diff ${base} ${head} ${packageJsonPath}`);
+            const diff = yield (0, common_1.execCommand)(`git diff --word-diff ${base} ${head} ${packageJsonPath}`);
             const versionRegExp = new RegExp(/"version": \[-"(.*)",-]{\+"(.*)",\+}/);
             const regExpResult = diff.match(versionRegExp);
             if (regExpResult != null) {
