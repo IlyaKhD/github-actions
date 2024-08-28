@@ -38,6 +38,8 @@
     "typescript": "^4.9.5"
   },
   "workspaces": [
+    "common",
+    "pr-filter",
     "send-teams-notification",
     "verify-version-change"
   ]
