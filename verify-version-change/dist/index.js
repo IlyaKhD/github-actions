@@ -36108,12 +36108,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(5316));
+const child_process_1 = __nccwpck_require__(2081);
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const semver_1 = __importDefault(__nccwpck_require__(931));
 const common_1 = __nccwpck_require__(9145);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            (0, child_process_1.exec)("git rev-parse --verify HEAD", (error, stdout, stderr) => {
+                if (error) {
+                    console.log(`error: ${error.message}`);
+                    return;
+                }
+                if (stderr) {
+                    console.log(`stderr: ${stderr}`);
+                    return;
+                }
+                console.log(`stdout: ${stdout}`);
+            });
             const packageJsonPath = path_1.default.join(core.getInput('path'), 'package.json');
             const { head, base } = yield (0, common_1.getPrRevisionRange)();
             // https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---word-diffltmodegt

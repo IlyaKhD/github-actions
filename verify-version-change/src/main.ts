@@ -1,4 +1,5 @@
 import * as core from '@actions/core'
+import { exec } from 'child_process';
 
 import path from 'path'
 import semver from 'semver'
@@ -7,6 +8,18 @@ import { execCommand, getPrRevisionRange } from 'common';
 
 async function run(): Promise<void> {
     try {
+        exec("git rev-parse --verify HEAD", (error, stdout, stderr) => {
+            if (error) {
+                console.log(`error: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                console.log(`stderr: ${stderr}`);
+                return;
+            }
+            console.log(`stdout: ${stdout}`);
+        });
+
         const packageJsonPath = path.join(core.getInput('path'), 'package.json')
 
         const { head, base } = await getPrRevisionRange();
