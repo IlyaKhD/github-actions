@@ -23,7 +23,7 @@ async function run(): Promise<void> {
             files: filteredFiles,
             count: filteredFiles.length,
         }));
-        core.setOutput('count', JSON.stringify(filteredFiles));
+        core.setOutput('count', JSON.stringify(filteredFiles.length));
     } catch (error) {
         if (error instanceof Error) {
             core.setFailed(error.message)
